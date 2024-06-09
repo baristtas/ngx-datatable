@@ -1,0 +1,32 @@
+<div class="modal-header">
+    <h4 class="modal-title">Değiştirilmiş Veriler</h4>
+  </div>
+  <div class="modal-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">İl İlk Durum</th>
+          <th scope="col">İlçe Id  İlk Durum</th>
+          <th scope="col">İlçe  İlk Durum</th>
+          <th scope="col">İl Final Durum</th>
+          <th scope="col">İlçe Id Final Durum</th>
+          <th scope="col">İlçe Final Durum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let i of changedEntities; let x = index">
+          <th scope="row">{{x+1}}</th>
+          <td>{{i.cityName}}</td>
+          <td>{{i.countyId}}</td>
+          <td>{{i.countyName}}</td>
+
+          <td>{{i.cityName}}</td>
+          <td>{{i.countyId}}</td>
+          <td>{{i.countyName}}</td>
+        </tr>
+      </tbody>
+    </table>  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Kapat</button>
+  </div>
