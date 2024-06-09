@@ -51,14 +51,14 @@ export class AppComponent {
   }
 
   updateValue(event: any, cell: any, p_rowIndex: number): void {
-    var temp_oldValue = {...this.countiesArray[p_rowIndex]};
+    var temp_oldValue = { ...this.countiesArray[p_rowIndex] };
     this.countiesArray[p_rowIndex][cell] = event.target.value; //değişen veriyi update et.
 
     var entityToAppend = {
       changeEntityId: this.changeHistoryArray.length, //Array içindeki indeks
       rowIndex: p_rowIndex,                           //Row index, sort kapalı olduğu için sabit
       oldValue: temp_oldValue,                        //Eski değer
-      newValue: {...this.countiesArray[p_rowIndex]}        //Yeni değer burada tutulur.
+      newValue: { ...this.countiesArray[p_rowIndex] }        //Yeni değer burada tutulur.
     };
     this.changeHistoryArray.push(entityToAppend); //Change history'e old ve new value'yu ekler. Bu şekilde entity'nin ilk haline dönebiliriz.
     this.UpdateLocalChangesArray(entityToAppend); //Her rowId için maximum bir değiştirilmiş veri entity'si tutar.
@@ -72,10 +72,10 @@ export class AppComponent {
     //Yoksa yeni referans ile append et.
     var temp_entities = this.uniqueChangesByRowId.filter(x => x.rowIndex == param_entity.rowIndex);
     if (temp_entities.length > 0) { //Update et
-      temp_entities[0].newValue = {...param_entity.newValue};
+      temp_entities[0].newValue = { ...param_entity.newValue };
     }
     else { //Append et.
-      this.uniqueChangesByRowId.push({...param_entity});
+      this.uniqueChangesByRowId.push({ ...param_entity });
     }
   }
 
@@ -97,22 +97,21 @@ export class AppComponent {
     if (this.editing[rowIndex]) this.ToggleEdit(null, rowIndex); //Edit açıksa kapat.
 
     try {
-      var filteredChangesArray = this.changeHistoryArray.filter(x => x.rowIndex == rowIndex);
+      var temp_entity = this.uniqueChangesByRowId.filter(x => x.rowIndex == rowIndex);
 
-      if (filteredChangesArray.length > 0) {
-        var entity = filteredChangesArray.sort((a, b) => b.changeEntityId - a.changeEntityId).at(0); // desc
+      if (temp_entity.length > 0) {
+        if (!isNullOrUndefined(temp_entity)) {
+          const modalRef = this.modalService.open(ModalComponentComponent, { size: 'xl', scrollable: true });
 
-        if (!isNullOrUndefined(entity)) {
-          const modalRef = this.modalService.open(ModalComponentComponent,{size:'xl'});
-          modalRef.componentInstance.changedEntities = [{
-            cityName: this.GetCityNameById(entity.newValue.city),
-            countyId: entity.newValue.id,
-            countyName: entity.newValue.name
-          }];
+          temp_entity.forEach(element => {
+            element.oldValue.cityName = this.GetCityNameById(element.oldValue.city);
+            element.newValue.cityName = this.GetCityNameById(element.newValue.city);
+          });
+          modalRef.componentInstance.changedEntities = temp_entity;
         }
       }
       else
-        alert("CHANGE YOK!!!");
+        alert("GÖNDERİLEBİLECEK DEĞİŞİKLİK YOK!");
     }
     catch (error) {
       console.log(error)
@@ -120,10 +119,27 @@ export class AppComponent {
   }
 
 
-  on_BatchSaveClicked()
-  {
-    const modalRef = this.modalService.open(ModalComponentComponent,{size:'xl'});
-    modalRef.componentInstance.changedEntities = {...this.uniqueChangesByRowId};
+  on_BatchSaveClicked() {
+    try {
+      var temp_entities = this.uniqueChangesByRowId;
+
+      if (temp_entities.length > 0) {
+        if (!isNullOrUndefined(temp_entities)) {
+          const modalRef = this.modalService.open(ModalComponentComponent, { size: 'xl', scrollable: true });
+
+          temp_entities.forEach(element => {
+            element.oldValue.cityName = this.GetCityNameById(element.oldValue.city);
+            element.newValue.cityName = this.GetCityNameById(element.newValue.city);
+          });
+          modalRef.componentInstance.changedEntities = temp_entities;
+        }
+      }
+      else
+        alert("GÖNDERİLEBİLECEK DEĞİŞİKLİK YOK!");
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
 }

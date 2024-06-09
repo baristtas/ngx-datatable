@@ -17,13 +17,13 @@
       <tbody>
         <tr *ngFor="let i of changedEntities; let x = index">
           <th scope="row">{{x+1}}</th>
-          <td>{{i.cityName}}</td>
-          <td>{{i.countyId}}</td>
-          <td>{{i.countyName}}</td>
+          <td>{{i.oldValue.cityName}}</td>
+          <td>{{i.oldValue.id}}</td>
+          <td>{{i.oldValue.name}}</td>
 
-          <td>{{i.cityName}}</td>
-          <td>{{i.countyId}}</td>
-          <td>{{i.countyName}}</td>
+          <td>{{i.newValue.cityName}}</td>
+          <td>{{i.newValue.id}}</td>
+          <td>{{i.newValue.name}}</td>
         </tr>
       </tbody>
     </table>  </div>
