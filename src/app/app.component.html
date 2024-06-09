@@ -13,8 +13,10 @@
 
       <ngx-datatable-column name="İl" [sortable]="false">
         <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
-          {{GetCityNameById(row.city)}}
-
+          <span *ngIf="!editing[rowIndex]">{{GetCityNameById(row.city)}}</span>
+          <select *ngIf="editing[rowIndex]" (change)="updateValue($event, 'city', rowIndex)">
+            <option *ngFor="let x of citiesArray; let i = index" >{{x.name}}</option>
+          </select>
         </ng-template>
       </ngx-datatable-column>
 

@@ -31,7 +31,7 @@ export class AppComponent {
   ngOnInit() {
     this.countiesArray = ilceler;
     this.citiesArray = iller;
-
+    this.citiesArray = this.citiesArray.sort((a, b) => Number(a.id) - Number(b.id));
 
     console.log('Initialized');
   };
@@ -49,10 +49,29 @@ export class AppComponent {
     }
     return "Tanımsız";
   }
+  GetCityIdByName(cityName: string): number {
+    try {
+      var cityId = this.citiesArray.find(c => c.name == cityName).id;
+
+      if (!isNullOrUndefined(cityId)) {
+        return Number(cityId);
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+    return -1;
+  }
 
   updateValue(event: any, cell: any, p_rowIndex: number): void {
     var temp_oldValue = { ...this.countiesArray[p_rowIndex] };
-    this.countiesArray[p_rowIndex][cell] = event.target.value; //değişen veriyi update et.
+    if (cell != 'city') {
+      this.countiesArray[p_rowIndex][cell] = event.target.value; //değişen veriyi update et.
+    }
+    else
+    {
+      this.countiesArray[p_rowIndex].city = this.GetCityIdByName(event.target.value);
+    }
 
     var entityToAppend = {
       changeEntityId: this.changeHistoryArray.length, //Array içindeki indeks
