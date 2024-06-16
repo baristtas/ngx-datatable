@@ -23,7 +23,7 @@ export class AppComponent {
   SelectionType = SelectionType;
   ColumnMode = ColumnMode;
   isDropdownOpen: boolean[] = [];
-  selected :any[] =[];
+  selected: any[] = [];
   //MEMBERS END ---------------------------------------------------------------------------------------------------------------------
 
   constructor(private modalService: NgbModal) {
@@ -79,7 +79,7 @@ export class AppComponent {
       this.countiesArray[p_rowIndex][cell] = event.target.value; //değişen veriyi update et.
     }
     else {
-      this.countiesArray[p_rowIndex].city = this.GetCityIdByName(event.target.value);
+      this.countiesArray[p_rowIndex].city = event.selected[0].id;
     }
 
     var entityToAppend = {
@@ -120,8 +120,11 @@ export class AppComponent {
   ToggleEdit(event: any, rowIndex: number): void {
     this.CloseEveryEditMode(true, rowIndex);
     this.editing[rowIndex] = !this.editing[rowIndex];
+    this.SetCityAsSelected(rowIndex);
   }
-
+  SetCityAsSelected(rowIndex: number) {
+    this.selected = this.citiesArray.filter(x => x.id == this.countiesArray[rowIndex].city);
+  }
   toggleDropdown(p_rowIndex: number) {
     for (let i = 0; i < this.isDropdownOpen.length; i++) {
       if (i !== p_rowIndex) {
@@ -161,7 +164,7 @@ export class AppComponent {
 
   on_BatchSaveClicked() {
     try {
-      this.CloseEveryEditMode(false,-1);
+      this.CloseEveryEditMode(false, -1);
       var temp_entities = this.uniqueChangesByRowId;
 
       if (temp_entities.length > 0) {
@@ -190,8 +193,10 @@ export class AppComponent {
     return this.isDropdownOpen[p_rowIndex];
   }
 
-  onCitySelect(event:any, p_rowIndex:number)
-  {
-    console.log('Select Event' + JSON.stringify(event.value) + " |||| " + JSON.stringify(this.selected) + ". RowIndex: " + p_rowIndex);
+  onCitySelect(event: any, p_rowIndex: number) {
+    console.log('Select Event' + JSON.stringify(event.selected) + " |||| " + JSON.stringify(this.selected) + ". RowIndex: " + p_rowIndex);
+    //var x = new Array<any>(this.selected);
+    this.updateValue(event,'city',p_rowIndex);
+    //x.map((value) => console.log(JSON.stringify(value)));
   }
 }
