@@ -5,18 +5,43 @@
         <button type="button" class="btn btn-primary" (click)="on_BatchSaveClicked()"> Batch Save</button>
       </div>
     </div>
+
   </div>
- <!-- rename test -->
+  <!-- rename test -->
   <div class="row">
-    <ngx-datatable #mainTable class="material" [columnMode]="'force'" [rowHeight]="50" [headerHeight]="75"
+    <ngx-datatable #mainTable class="material" [columnMode]="ColumnMode.force" [rowHeight]="50" [headerHeight]="75"
       [rows]="countiesArray">
 
       <ngx-datatable-column name="İl" [sortable]="false">
         <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
+
           <span *ngIf="!editing[rowIndex]">{{GetCityNameById(row.city)}}</span>
-          <select *ngIf="editing[rowIndex]" (change)="updateValue($event, 'city', rowIndex)">
-            <option *ngFor="let x of citiesArray; let i = index" >{{x.name}}</option>
-          </select>
+          
+          <div *ngIf="editing[rowIndex]">
+
+            <button (click)="toggleDropdown(rowIndex)" class="btn btn-primary dropdown-toggle" type="button">Şehirler</button>
+
+            <div *ngIf="IsDropdownOpen(rowIndex)" class="dropdown-menu show">
+              <ngx-datatable 
+              class="material"
+              [rows]="citiesArray"
+              [columnMode]="ColumnMode.standard"
+              [columns]="[
+              { prop: 'name' , name:'Şehir Adı', width:250},
+              { prop: 'id', name:'Şehir Id',width:250 }]"
+              [headerHeight]="50"
+              [footerHeight]="50"
+              rowHeight="auto"
+              [selectionType]="SelectionType.single"
+              [selected]="selected"
+              [limit]="10"
+              (select)="onCitySelect($event,rowIndex)"
+              >
+              </ngx-datatable>
+
+            </div>
+          </div>
+
         </ng-template>
       </ngx-datatable-column>
 

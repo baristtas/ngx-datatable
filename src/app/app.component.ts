@@ -1,8 +1,7 @@
 import { Component, NgModule, OnInit } from '@angular/core';
 import ilceler from '../assets/data/ilceler.json';
 import iller from '../assets/data/iller.json';
-import { isNullOrUndefined } from '@swimlane/ngx-datatable';
-import { FormsModule } from '@angular/forms';
+import { ColumnMode, SelectionType, isNullOrUndefined } from '@swimlane/ngx-datatable';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalComponentComponent } from './modal-component/modal-component.component';
 
@@ -21,7 +20,10 @@ export class AppComponent {
   changeHistoryArray: any[] = []; //Rowda her yapılan değişikliği adım adım tutar.
   uniqueChangesByRowId: any[] = []; //Row'un ilk hali ve son halini tutar.
   editing: any[] = [];
-
+  SelectionType = SelectionType;
+  ColumnMode = ColumnMode;
+  isDropdownOpen: boolean[] = [];
+  selected :any[] =[];
   //MEMBERS END ---------------------------------------------------------------------------------------------------------------------
 
   constructor(private modalService: NgbModal) {
@@ -35,6 +37,13 @@ export class AppComponent {
 
     console.log('Initialized');
   };
+
+  ngAfterViewInit() {
+    console.log("after view init");
+
+    console.log(JSON.stringify(this.citiesArray[3]));
+    this.selected.push(this.citiesArray[3]);
+  }
 
   GetCityNameById(cityId: string): string {
     try {
@@ -65,11 +74,11 @@ export class AppComponent {
 
   updateValue(event: any, cell: any, p_rowIndex: number): void {
     var temp_oldValue = { ...this.countiesArray[p_rowIndex] };
+    console.log(JSON.stringify(cell));
     if (cell != 'city') {
       this.countiesArray[p_rowIndex][cell] = event.target.value; //değişen veriyi update et.
     }
-    else
-    {
+    else {
       this.countiesArray[p_rowIndex].city = this.GetCityIdByName(event.target.value);
     }
 
@@ -97,18 +106,30 @@ export class AppComponent {
       this.uniqueChangesByRowId.push({ ...param_entity });
     }
   }
-
-  ToggleEdit(event: any, rowIndex: number): void {
-    console.log("EDIT TOGGLE BEFORE: " + this.editing[rowIndex]);
-    if (this.editing[rowIndex] != null) {
-      this.editing[rowIndex] = !this.editing[rowIndex];
+  CloseEveryEditMode(exceptRowIndex: boolean, p_rowIndex: number) {
+    if (exceptRowIndex) {
+      // Tüm değerleri false yap, p_rowIndex hariç
+      this.editing = this.editing.map((value, index) => {
+        return index === p_rowIndex ? value : false;
+      });
+    } else {
+      this.editing = this.editing.map(() => false);
     }
-    else {
-      this.editing[rowIndex] = true;
-    }
-    console.log("EDIT TOGGLE AFTER: " + this.editing[rowIndex]);
   }
 
+  ToggleEdit(event: any, rowIndex: number): void {
+    this.CloseEveryEditMode(true, rowIndex);
+    this.editing[rowIndex] = !this.editing[rowIndex];
+  }
+
+  toggleDropdown(p_rowIndex: number) {
+    for (let i = 0; i < this.isDropdownOpen.length; i++) {
+      if (i !== p_rowIndex) {
+        this.isDropdownOpen[i] = false;
+      }
+    }
+    this.isDropdownOpen[p_rowIndex] = !this.isDropdownOpen[p_rowIndex];
+  }
 
   SaveChangesByRowIndex(rowIndex: number): void {
     //changeHistory listesinden rowIndex'in son değişim elemanını çek.
@@ -140,6 +161,7 @@ export class AppComponent {
 
   on_BatchSaveClicked() {
     try {
+      this.CloseEveryEditMode(false,-1);
       var temp_entities = this.uniqueChangesByRowId;
 
       if (temp_entities.length > 0) {
@@ -161,4 +183,15 @@ export class AppComponent {
     }
   }
 
+  IsDropdownOpen(p_rowIndex: number): boolean {
+    if (isNullOrUndefined(this.isDropdownOpen[p_rowIndex])) {
+      return false;
+    }
+    return this.isDropdownOpen[p_rowIndex];
+  }
+
+  onCitySelect(event:any, p_rowIndex:number)
+  {
+    console.log('Select Event' + JSON.stringify(event.value) + " |||| " + JSON.stringify(this.selected) + ". RowIndex: " + p_rowIndex);
+  }
 }
