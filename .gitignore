@@ -40,3 +40,6 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Build dosyalarını branch bağımsız kopya yapıştır yapmak için lokal bir klasörde tutuyorum
+/deploy_files_ghpages
